@@ -26,10 +26,9 @@ public:
 
     // 重载操作符
     T& operator[](int index);
-    const T& operator[](int index) const; // 注意多实现一个const版本，提供给const MyVector<T>对象
-    void operator=(const MyVector& obj); 
+    const T& operator[](int index) const; // TODO: 注意多实现一个const版本，提供给const MyVector<T>对象
+    MyVector<T>& operator=(const MyVector<T>& obj);
 };
-
 
 
 template<typename T>
@@ -39,7 +38,7 @@ inline MyVector<T>::MyVector()
 }
 
 template<typename T>
-inline MyVector<T>::~MyVector()
+inline MyVector<T>::~MyVector() // TODO: 记住涉及到指针的，针对性实现一个析构
 {
     for (std::size_t index = 0; index < size; index++)
     {
@@ -119,25 +118,26 @@ inline T& MyVector<T>::operator[](int index)
 }
 
 template<typename T>
-inline void MyVector<T>::operator=(const MyVector<T>& obj)
+inline MyVector<T>& MyVector<T>::operator=(const MyVector<T>& obj)
 {
-    if (this == &obj)
+    if (this != &obj)
     {
-        return *this;
-    }
-    for (std::size_t index = 0; index < size; index++)
-    {
-        myArray[index].~T();
-    }
-    free(myArray);
+        for (std::size_t index = 0; index < size; index++)
+        {
+            myArray[index].~T();
+        }
+        free(myArray);
 
-    this->capacity = obj.capacity;
-    this->size = obj.size;
-    myArray = (T*)malloc(capacity * sizeof(T));
-    for (std::size_t index = 0; index < size; index++)
-    {
-        new (&myArray[index]) T(obj[index]);
+        this->capacity = obj.capacity;
+        this->size = obj.size;
+        myArray = (T*)malloc(capacity * sizeof(T));
+        for (std::size_t index = 0; index < size; index++)
+        {
+            new (&myArray[index]) T(obj[index]);
+        }
     }
+
+    return *this;
 }
 
 
