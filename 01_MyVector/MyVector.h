@@ -30,7 +30,7 @@ public:
     void operator=(const MyVector& obj); 
 };
 
-#endif
+
 
 template<typename T>
 inline MyVector<T>::MyVector()
@@ -139,3 +139,8 @@ inline void MyVector<T>::operator=(const MyVector<T>& obj)
         new (&myArray[index]) T(obj[index]);
     }
 }
+
+
+
+
+#endif
