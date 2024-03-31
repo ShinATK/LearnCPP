@@ -35,6 +35,10 @@ template<typename T>
 inline MyVector<T>::MyVector()
 {
     myArray = (T*)malloc(capacity * sizeof(T));
+    if (myArray == nullptr)
+    {
+        throw std::bad_alloc();
+    }
 }
 
 template<typename T>
@@ -51,9 +55,14 @@ inline MyVector<T>::~MyVector() // TODO: 记住涉及到指针的，针对性实现一个析构
 template<typename T>
 inline MyVector<T>::MyVector(const MyVector<T>& obj)
 {
+    myArray = (T*)malloc(obj.capacity * sizeof(T)); // TODO：先malloc，再改变capacity，防止malloc失败但capacity已经改变
+    if (myArray == nullptr)
+    {
+        throw std::bad_alloc();
+    }
+
     this->size = obj.size;
     this->capacity = obj.capacity;
-    myArray = (T*)malloc(capacity * sizeof(T));
     for (std::size_t index = 0; index < size; index++)
     {
         new (&myArray[index]) T(obj[index]);
@@ -64,7 +73,12 @@ inline MyVector<T>::MyVector(const MyVector<T>& obj)
 template<typename T>
 inline void MyVector<T>::resize()
 {
-    T* temp = (T*)malloc(capacity * sizeof(T) * 2);
+    T* temp = (T*)malloc(capacity * sizeof(T) * 2); // TODO：涉及到malloc的，多个心眼
+    if (temp == nullptr) // 判断下有没有分配到内存
+    {
+        throw std::bad_alloc();
+    }
+
     for (std::size_t index = 0; index < size; index++)
     {
         new (&temp[index]) T(myArray[index]);
@@ -92,7 +106,7 @@ inline void MyVector<T>::push_back(const T& new_ele)
 
 // 重载操作符
 template<typename T>
-inline const T& MyVector<T>::operator[](int index) const
+inline const T& MyVector<T>::operator[](int index) const // TODO：记住多设置一个const版本给const对象使用
 {
     if (index < size)
     {
@@ -103,7 +117,6 @@ inline const T& MyVector<T>::operator[](int index) const
         throw std::out_of_range("Index out of range!");
     }
 }
-
 template<typename T>
 inline T& MyVector<T>::operator[](int index)
 {
@@ -120,7 +133,7 @@ inline T& MyVector<T>::operator[](int index)
 template<typename T>
 inline MyVector<T>& MyVector<T>::operator=(const MyVector<T>& obj)
 {
-    if (this != &obj)
+    if (this != &obj) // TODO: 注意排除自我赋值
     {
         for (std::size_t index = 0; index < size; index++)
         {
@@ -133,7 +146,7 @@ inline MyVector<T>& MyVector<T>::operator=(const MyVector<T>& obj)
         myArray = (T*)malloc(capacity * sizeof(T));
         for (std::size_t index = 0; index < size; index++)
         {
-            new (&myArray[index]) T(obj[index]);
+            new (&myArray[index]) T(obj[index]); 
         }
     }
 
